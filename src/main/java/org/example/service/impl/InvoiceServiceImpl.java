@@ -1,7 +1,7 @@
 package org.example.service.impl;
 
 import org.example.dto.invoice.InvoiceCreateDTO;
-import org.example.exceptions.InvoiceNotFoundException;
+import org.example.exception.InvoiceNotFoundException;
 import org.example.model.Invoice;
 import org.example.repo.InvoiceRepository;
 import org.example.service.IInvoiceService;
@@ -17,7 +17,6 @@ public class InvoiceServiceImpl implements IInvoiceService {
 
     @Autowired
     private InvoiceRepository repo;
-
     @Autowired
     private StorageService storageService;
 
@@ -26,13 +25,13 @@ public class InvoiceServiceImpl implements IInvoiceService {
         try {
             Invoice invoice = new Invoice();
             invoice.setName(dto.getName());
-            invoice.setAmount(dto.getAmount());
-            var imageName = storageService.save(dto.getFile());
-            invoice.setFileName(imageName);
             invoice.setLocation(dto.getLocation());
+            invoice.setAmount(dto.getAmount());
+            var fileName = storageService.save(dto.getFile());
+            invoice.setFileName(fileName);
             return repo.save(invoice);
-        }
-        catch (Exception ex) {
+        } catch (Exception ex)
+        {
             return null;
         }
     }
@@ -54,12 +53,7 @@ public class InvoiceServiceImpl implements IInvoiceService {
 
     @Override
     public void deleteInvoiceById(Long id) {
-        Invoice invoice = getInvoiceById(id); // Fetch the invoice
-        // Delete the associated photo
-        if (invoice.getFileName() != null) {
-            storageService.delete(invoice.getFileName());
-        }
-        repo.delete(invoice); // Delete the invoice
+        repo.delete(getInvoiceById(id));
     }
 
     @Override
